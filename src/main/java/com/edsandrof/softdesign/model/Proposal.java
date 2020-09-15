@@ -2,6 +2,7 @@ package com.edsandrof.softdesign.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,15 +17,21 @@ import java.util.Objects;
 public class Proposal implements Serializable {
     private static final long serialVersionUID = -6841268201061177337L;
 
+    @ApiModelProperty(value = "Id of proposal")
     @Id
     private String id;
+    @ApiModelProperty(value = "Proposal description")
     private String description;
+    @ApiModelProperty(value = "Proposal creation date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
     private Date creationDate;
+    @ApiModelProperty(value = "Opening date for voting")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
     private Date pollOpeningDate;
+    @ApiModelProperty(value = "Closing date for voting")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
     private Date pollClosingDate;
+    @ApiModelProperty(value = "List of voting options")
     private List<String> votingOptions = new ArrayList<>();
 
     public Proposal() {

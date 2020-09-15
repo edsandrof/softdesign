@@ -22,6 +22,7 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.basePackage("com.edsandrof"))
                 .paths(PathSelectors.any())
                 .build()
+                .useDefaultResponseMessages(false)
                 .apiInfo(apiInfo());
     }
 
