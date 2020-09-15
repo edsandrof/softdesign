@@ -25,7 +25,7 @@ public class ProposalResource {
         return ResponseEntity.created(uri).build();
     }
 
-    @GetMapping(value = V1_PROPOSAL + "/{id}")
+    @GetMapping(value = V1_PROPOSAL + "/{id}", produces = "application/json")
     public ResponseEntity<Proposal> findById(@PathVariable String id) {
         Proposal proposal = proposalService.findById(id);
         return ResponseEntity.ok().body(proposal);
