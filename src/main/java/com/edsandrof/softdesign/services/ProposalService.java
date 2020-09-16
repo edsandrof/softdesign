@@ -1,10 +1,12 @@
 package com.edsandrof.softdesign.services;
 
-import com.edsandrof.softdesign.exceptions.ResourceNotFoundException;
-import com.edsandrof.softdesign.exceptions.VotingSessionOpenedException;
+import com.edsandrof.softdesign.exceptions.*;
+import com.edsandrof.softdesign.model.Member;
 import com.edsandrof.softdesign.model.Proposal;
+import com.edsandrof.softdesign.model.Vote;
 import com.edsandrof.softdesign.payload.ProposalPayload;
 import com.edsandrof.softdesign.payload.ProposalPayloadPatch;
+import com.edsandrof.softdesign.payload.VotePayload;
 import com.edsandrof.softdesign.repository.ProposalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import java.util.*;
 public class ProposalService {
     @Autowired
     private ProposalRepository proposalRepository;
+    @Autowired
+    private MemberService memberService;
 
     public Proposal register(ProposalPayload proposalPayload) {
         Proposal proposal = new Proposal(proposalPayload.getDescription(), proposalPayload.getVotingOptions());
@@ -62,5 +66,30 @@ public class ProposalService {
         System.out.println("Task performed on: " + new Date() + " Thread's name: " + Thread.currentThread().getName());
 
         return proposalRepository.save(proposal);
+    }
+
+    public Vote vote(String id, VotePayload votePayload) {
+        Proposal proposal = findById(id);
+        Member member = memberService.findById(votePayload.getMemberId());
+        validateVoting(proposal, member, votePayload.getVotingOption());
+        Vote vote = new Vote(member, votePayload.getVotingOption());
+        proposal.getVotingSession().add(vote);
+        proposalRepository.save(proposal);
+        return vote;
+    }
+
+    private void validateVoting(Proposal proposal, Member member, String votingOption) {
+        if (proposal.getVotingSessionClosingDate() == null) {
+            throw new VotingSessionNotOpenedException(proposal.getId());
+        }
+        if (!proposal.isVotingSessionOpen()) {
+            throw new VotingSessionClosedException(proposal.getId());
+        }
+        if (proposal.getVotingSession().contains(new Vote(member, null))) {
+            throw new VotingSessionAlreadyVotedException(proposal.getId());
+        }
+        if (!proposal.getVotingOptions().contains(votingOption)) {
+            throw new VotingSessionWrongOptionException(votingOption);
+        }
     }
 }

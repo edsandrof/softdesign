@@ -26,4 +26,36 @@ public class ResourceExceptionHandler {
         StandardError err = new StandardError(new Date(), status.value(), error, e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
+
+    @ExceptionHandler(VotingSessionNotOpenedException.class)
+    public ResponseEntity<StandardError> votingSessionNotOpened(VotingSessionNotOpenedException e, HttpServletRequest request) {
+        String error = "Voting session was not opened";
+        HttpStatus status = HttpStatus.CONFLICT;
+        StandardError err = new StandardError(new Date(), status.value(), error, e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(VotingSessionClosedException.class)
+    public ResponseEntity<StandardError> votingSessionClosed(VotingSessionClosedException e, HttpServletRequest request) {
+        String error = "Voting session was closed";
+        HttpStatus status = HttpStatus.CONFLICT;
+        StandardError err = new StandardError(new Date(), status.value(), error, e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(VotingSessionAlreadyVotedException.class)
+    public ResponseEntity<StandardError> votingSessionAlreadyVoted(VotingSessionAlreadyVotedException e, HttpServletRequest request) {
+        String error = "Already voted";
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        StandardError err = new StandardError(new Date(), status.value(), error, e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(VotingSessionWrongOptionException.class)
+    public ResponseEntity<StandardError> votingSessionWrongOption(VotingSessionWrongOptionException e, HttpServletRequest request) {
+        String error = "Wrong option";
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        StandardError err = new StandardError(new Date(), status.value(), error, e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
 }

@@ -36,6 +36,8 @@ public class Proposal implements Serializable {
     private boolean votingSessionOpen;
     @ApiModelProperty(value = "Duration of opened voting session (in minutes)")
     private Integer votingSessionDuration;
+    @ApiModelProperty(value = "Votes of members")
+    private List<Vote> votingSession = new ArrayList<>();
 
     public Proposal() {
     }
@@ -119,6 +121,10 @@ public class Proposal implements Serializable {
             this.votingSessionDuration = DEFAULT_SESSION_DURATION;
         }
         this.votingSessionDuration = votingSessionDuration;
+    }
+
+    public List<Vote> getVotingSession() {
+        return votingSession;
     }
 
     @Override
