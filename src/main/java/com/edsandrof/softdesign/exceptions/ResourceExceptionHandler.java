@@ -18,4 +18,12 @@ public class ResourceExceptionHandler {
         StandardError err = new StandardError(new Date(), status.value(), error, e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
+
+    @ExceptionHandler(VotingSessionOpenedException.class)
+    public ResponseEntity<StandardError> votingSessionOpened(VotingSessionOpenedException e, HttpServletRequest request) {
+        String error = "Voting session already opened";
+        HttpStatus status = HttpStatus.CONFLICT;
+        StandardError err = new StandardError(new Date(), status.value(), error, e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
 }

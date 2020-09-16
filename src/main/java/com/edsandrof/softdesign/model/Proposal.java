@@ -1,23 +1,22 @@
 package com.edsandrof.softdesign.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Document
 public class Proposal implements Serializable {
     private static final long serialVersionUID = -6841268201061177337L;
+    private static final int DEFAULT_SESSION_DURATION = 1;
 
-    @ApiModelProperty(value = "Id of proposal")
+    @ApiModelProperty(value = "Proposal id")
     @Id
     private String id;
     @ApiModelProperty(value = "Proposal description")
@@ -27,26 +26,32 @@ public class Proposal implements Serializable {
     private Date creationDate;
     @ApiModelProperty(value = "Opening date for voting")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
-    private Date pollOpeningDate;
+    private Date votingSessionOpeningDate;
     @ApiModelProperty(value = "Closing date for voting")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
-    private Date pollClosingDate;
+    private Date votingSessionClosingDate;
     @ApiModelProperty(value = "List of voting options")
     private List<String> votingOptions = new ArrayList<>();
+    @JsonIgnore
+    private boolean votingSessionOpen;
+    @ApiModelProperty(value = "Duration of opened voting session (in minutes)")
+    private Integer votingSessionDuration;
 
     public Proposal() {
     }
 
     public Proposal(String description, List<String> votingOptions) {
-        this(description, new Date(), null, null, votingOptions);
+        this(null, description, new Date(), null, null, votingOptions, null);
     }
 
-    public Proposal(String description, Date creationDate, Date pollOpeningDate, Date pollClosingDate, List<String> votingOptions) {
+    public Proposal(String id, String description, Date creationDate, Date votingSessionOpeningDate, Date votingSessionClosingDate, List<String> votingOptions, Integer votingSessionDuration) {
+        this.id = id;
         this.description = description;
         this.creationDate = creationDate;
-        this.pollOpeningDate = pollOpeningDate;
-        this.pollClosingDate = pollClosingDate;
+        this.votingSessionOpeningDate = votingSessionOpeningDate;
+        this.votingSessionClosingDate = votingSessionClosingDate;
         this.votingOptions = votingOptions;
+        this.votingSessionDuration = votingSessionDuration;
     }
 
     public String getId() {
@@ -73,20 +78,20 @@ public class Proposal implements Serializable {
         this.creationDate = creationDate;
     }
 
-    public Date getPollOpeningDate() {
-        return pollOpeningDate;
+    public Date getVotingSessionOpeningDate() {
+        return votingSessionOpeningDate;
     }
 
-    public void setPollOpeningDate(Date pollOpeningDate) {
-        this.pollOpeningDate = pollOpeningDate;
+    public void setVotingSessionOpeningDate(Date votingSessionOpeningDate) {
+        this.votingSessionOpeningDate = votingSessionOpeningDate;
     }
 
-    public Date getPollClosingDate() {
-        return pollClosingDate;
+    public Date getVotingSessionClosingDate() {
+        return votingSessionClosingDate;
     }
 
-    public void setPollClosingDate(Date pollClosingDate) {
-        this.pollClosingDate = pollClosingDate;
+    public void setVotingSessionClosingDate(Date votingSessionClosingDate) {
+        this.votingSessionClosingDate = votingSessionClosingDate;
     }
 
     public List<String> getVotingOptions() {
@@ -95,6 +100,25 @@ public class Proposal implements Serializable {
 
     public void setVotingOptions(List<String> votingOptions) {
         this.votingOptions = votingOptions;
+    }
+
+    public boolean isVotingSessionOpen() {
+        return votingSessionOpen;
+    }
+
+    public void setVotingSessionOpen(boolean votingSessionOpen) {
+        this.votingSessionOpen = votingSessionOpen;
+    }
+
+    public Integer getVotingSessionDuration() {
+        return votingSessionDuration;
+    }
+
+    public void setVotingSessionDuration(Integer votingSessionDuration) {
+        if (votingSessionDuration == null) {
+            this.votingSessionDuration = DEFAULT_SESSION_DURATION;
+        }
+        this.votingSessionDuration = votingSessionDuration;
     }
 
     @Override

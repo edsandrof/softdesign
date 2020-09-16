@@ -2,6 +2,7 @@ package com.edsandrof.softdesign.resources;
 
 import com.edsandrof.softdesign.model.Proposal;
 import com.edsandrof.softdesign.payload.ProposalPayload;
+import com.edsandrof.softdesign.payload.ProposalPayloadPatch;
 import com.edsandrof.softdesign.services.ProposalService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -27,9 +28,7 @@ public class ProposalResource {
 
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Register new proposal")
-    @ApiResponses(value =
-        @ApiResponse(code = 201, message = "Proposal registered")
-    )
+    @ApiResponses(value = @ApiResponse(code = 201, message = "Proposal registered"))
     @PostMapping(value = V1_PROPOSAL)
     public ResponseEntity<Proposal> register(@ApiParam(value = "Object containing description and voting options") @RequestBody ProposalPayload proposalPayload) {
         Proposal proposal = proposalService.register(proposalPayload);
@@ -49,12 +48,23 @@ public class ProposalResource {
     }
 
     @ApiOperation(value = "List all proposals")
-    @ApiResponses(value =
-        @ApiResponse(code = 200, message = "Returns a list of proposals")
-    )
+    @ApiResponses(value = @ApiResponse(code = 200, message = "Returns a list of proposals"))
     @GetMapping(value = V1_PROPOSAL, produces = CONTENT_TYPE_JSON)
     public ResponseEntity<List<Proposal>> findAll() {
         List<Proposal> proposals = proposalService.findAll();
         return ResponseEntity.ok().body(proposals);
+    }
+
+    @ApiOperation(value = "Open voting session in this proposal")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Open voting session"),
+            @ApiResponse(code = 409, message = "Voting session is already open")
+    })
+    @PatchMapping(value = V1_PROPOSAL + "/{id}")
+    public ResponseEntity<Proposal> openVotingSession(@ApiParam(value = "Id of proposal") @PathVariable String id,
+                                                      @ApiParam(value = "Voting session duration (in minutes)")
+                                                      @RequestBody ProposalPayloadPatch proposalPayloadPatch) {
+        Proposal proposal = proposalService.openVotingSession(id, proposalPayloadPatch);
+        return ResponseEntity.ok().body(proposal);
     }
 }
