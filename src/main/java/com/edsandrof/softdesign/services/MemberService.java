@@ -2,6 +2,7 @@ package com.edsandrof.softdesign.services;
 
 import com.edsandrof.softdesign.exceptions.ResourceNotFoundException;
 import com.edsandrof.softdesign.model.Member;
+import com.edsandrof.softdesign.payload.MemberPayload;
 import com.edsandrof.softdesign.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,5 +23,10 @@ public class MemberService {
 
     public List<Member> findAll() {
         return memberRepository.findAll();
+    }
+
+    public Member register(MemberPayload memberPayload) {
+        Member member = new Member(memberPayload.getFullName(), memberPayload.getCpf());
+        return memberRepository.save(member);
     }
 }

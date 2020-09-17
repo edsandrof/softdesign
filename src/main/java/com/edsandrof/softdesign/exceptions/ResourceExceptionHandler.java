@@ -27,14 +27,6 @@ public class ResourceExceptionHandler {
         return ResponseEntity.status(status).body(err);
     }
 
-    @ExceptionHandler(VotingSessionNotOpenedException.class)
-    public ResponseEntity<StandardError> votingSessionNotOpened(VotingSessionNotOpenedException e, HttpServletRequest request) {
-        String error = "Voting session was not opened";
-        HttpStatus status = HttpStatus.CONFLICT;
-        StandardError err = new StandardError(new Date(), status.value(), error, e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(status).body(err);
-    }
-
     @ExceptionHandler(VotingSessionClosedException.class)
     public ResponseEntity<StandardError> votingSessionClosed(VotingSessionClosedException e, HttpServletRequest request) {
         String error = "Voting session was closed";
@@ -55,6 +47,14 @@ public class ResourceExceptionHandler {
     public ResponseEntity<StandardError> votingSessionWrongOption(VotingSessionWrongOptionException e, HttpServletRequest request) {
         String error = "Wrong option";
         HttpStatus status = HttpStatus.BAD_REQUEST;
+        StandardError err = new StandardError(new Date(), status.value(), error, e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(MemberCannotVoteException.class)
+    public ResponseEntity<StandardError> memberCannotVote(MemberCannotVoteException e, HttpServletRequest request) {
+        String error = "Member cannot vote";
+        HttpStatus status = HttpStatus.FORBIDDEN;
         StandardError err = new StandardError(new Date(), status.value(), error, e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }

@@ -30,9 +30,10 @@ public class DevConfig implements CommandLineRunner {
         memberRepository.deleteAll();
 
         List<Member> members = new ArrayList<>();
+        List<String> cpfs = new ArrayList<>(Arrays.asList("46780128260", "79115237206", "28136579130"));
         Faker faker = new Faker();
         for (int i = 0; i < 3; i++) {
-            Member member = new Member(String.valueOf(faker.number().randomNumber()), faker.name().fullName());
+            Member member = new Member(String.valueOf(faker.number().randomNumber()), faker.name().fullName(), cpfs.get(i));
             members.add(member);
         }
 

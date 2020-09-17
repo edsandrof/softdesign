@@ -1,5 +1,6 @@
 package com.edsandrof.softdesign.resources;
 
+import com.edsandrof.softdesign.dto.ProposalDTO;
 import com.edsandrof.softdesign.model.Proposal;
 import com.edsandrof.softdesign.model.Vote;
 import com.edsandrof.softdesign.payload.ProposalPayload;
@@ -74,7 +75,7 @@ public class ProposalResource {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Vote registered"),
             @ApiResponse(code = 400, message = "Member submitted an incorrect voting option"),
-            @ApiResponse(code = 403, message = "Member has already voted on this proposal"),
+            @ApiResponse(code = 403, message = "Member has already voted on this proposal or member cannot vote"),
             @ApiResponse(code = 409, message = "Voting session was not opened yet or was opened and closed")
     })
     @PostMapping(value = V1_ENDPOINT + "/{id}/voting")
@@ -83,5 +84,13 @@ public class ProposalResource {
                                      @RequestBody VotePayload votePayload) {
         Vote vote = proposalService.vote(id, votePayload);
         return ResponseEntity.ok().body(vote);
+    }
+
+    @ApiOperation(value = "Voting results on the proposal")
+    @ApiResponses(value = @ApiResponse(code = 200, message = "Get voting results"))
+    @GetMapping(value = V1_ENDPOINT + "/{id}/voting")
+    public ResponseEntity<ProposalDTO> results(@ApiParam(value = "Id of proposal") @PathVariable String id) {
+        ProposalDTO proposalDTO = proposalService.checkResults(id);
+        return ResponseEntity.ok().body(proposalDTO);
     }
 }

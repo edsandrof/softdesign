@@ -1,20 +1,28 @@
 package com.edsandrof.softdesign.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Document
 public class Proposal implements Serializable {
     private static final long serialVersionUID = -6841268201061177337L;
     private static final int DEFAULT_SESSION_DURATION = 1;
+
+    public enum ProposalStatus {
+        CREATED,
+        OPENED,
+        CLOSED
+    }
 
     @ApiModelProperty(value = "Proposal id")
     @Id
@@ -32,21 +40,21 @@ public class Proposal implements Serializable {
     private Date votingSessionClosingDate;
     @ApiModelProperty(value = "List of voting options")
     private List<String> votingOptions = new ArrayList<>();
-    @JsonIgnore
-    private boolean votingSessionOpen;
     @ApiModelProperty(value = "Duration of opened voting session (in minutes)")
     private Integer votingSessionDuration;
     @ApiModelProperty(value = "Votes of members")
     private List<Vote> votingSession = new ArrayList<>();
+    @ApiModelProperty(value = "Status of proposal")
+    private ProposalStatus status;
 
     public Proposal() {
     }
 
     public Proposal(String description, List<String> votingOptions) {
-        this(null, description, new Date(), null, null, votingOptions, null);
+        this(null, description, new Date(), null, null, votingOptions, null, ProposalStatus.CREATED);
     }
 
-    public Proposal(String id, String description, Date creationDate, Date votingSessionOpeningDate, Date votingSessionClosingDate, List<String> votingOptions, Integer votingSessionDuration) {
+    public Proposal(String id, String description, Date creationDate, Date votingSessionOpeningDate, Date votingSessionClosingDate, List<String> votingOptions, Integer votingSessionDuration, ProposalStatus status) {
         this.id = id;
         this.description = description;
         this.creationDate = creationDate;
@@ -54,6 +62,7 @@ public class Proposal implements Serializable {
         this.votingSessionClosingDate = votingSessionClosingDate;
         this.votingOptions = votingOptions;
         this.votingSessionDuration = votingSessionDuration;
+        this.status = status;
     }
 
     public String getId() {
@@ -104,14 +113,6 @@ public class Proposal implements Serializable {
         this.votingOptions = votingOptions;
     }
 
-    public boolean isVotingSessionOpen() {
-        return votingSessionOpen;
-    }
-
-    public void setVotingSessionOpen(boolean votingSessionOpen) {
-        this.votingSessionOpen = votingSessionOpen;
-    }
-
     public Integer getVotingSessionDuration() {
         return votingSessionDuration;
     }
@@ -125,6 +126,14 @@ public class Proposal implements Serializable {
 
     public List<Vote> getVotingSession() {
         return votingSession;
+    }
+
+    public ProposalStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ProposalStatus status) {
+        this.status = status;
     }
 
     @Override

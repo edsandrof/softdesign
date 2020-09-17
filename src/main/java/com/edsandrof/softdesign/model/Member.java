@@ -16,13 +16,20 @@ public class Member implements Serializable {
     private String id;
     @ApiModelProperty(value = "Member full name")
     private String fullName;
+    @ApiModelProperty(value = "Member CPF")
+    private String cpf;
 
     public Member() {
     }
 
-    public Member(String id, String fullName) {
+    public Member(String fullName, String cpf) {
+        this(null, fullName, cpf);
+    }
+
+    public Member(String id, String fullName, String cpf) {
         this.id = id;
         this.fullName = fullName;
+        this.cpf = cpf;
     }
 
     public String getId() {
@@ -39,6 +46,14 @@ public class Member implements Serializable {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     @Override

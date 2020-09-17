@@ -1,5 +1,6 @@
 package com.edsandrof.softdesign.services;
 
+import com.edsandrof.softdesign.dto.ProposalDTO;
 import com.edsandrof.softdesign.exceptions.*;
 import com.edsandrof.softdesign.model.Member;
 import com.edsandrof.softdesign.model.Proposal;
@@ -8,6 +9,7 @@ import com.edsandrof.softdesign.payload.ProposalPayload;
 import com.edsandrof.softdesign.payload.ProposalPayloadPatch;
 import com.edsandrof.softdesign.payload.VotePayload;
 import com.edsandrof.softdesign.repository.ProposalRepository;
+import com.edsandrof.softdesign.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,8 +42,11 @@ public class ProposalService {
         int minute = 60000;
         Proposal proposal = findById(id);
 
-        if (proposal.getVotingSessionClosingDate() != null) {
+        if (proposal.getStatus().equals(Proposal.ProposalStatus.OPENED)) {
             throw new VotingSessionOpenedException(id);
+        }
+        if (proposal.getStatus().equals(Proposal.ProposalStatus.CLOSED)) {
+            throw new VotingSessionClosedException(id);
         }
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
@@ -54,16 +59,14 @@ public class ProposalService {
             @Override
             public void run() {
                 Proposal proposalUpdate = findById(id);
-                System.out.println("Task performed on: " + new Date() + " Thread's name: " + Thread.currentThread().getName());
-                proposalUpdate.setVotingSessionOpen(false);
+                proposalUpdate.setStatus(Proposal.ProposalStatus.CLOSED);
                 proposalRepository.save(proposalUpdate);
             }
         };
 
         Timer timer = new Timer();
-        proposal.setVotingSessionOpen(true);
+        proposal.setStatus(Proposal.ProposalStatus.OPENED);
         timer.schedule(task, (proposal.getVotingSessionDuration() * minute));
-        System.out.println("Task performed on: " + new Date() + " Thread's name: " + Thread.currentThread().getName());
 
         return proposalRepository.save(proposal);
     }
@@ -71,7 +74,9 @@ public class ProposalService {
     public Vote vote(String id, VotePayload votePayload) {
         Proposal proposal = findById(id);
         Member member = memberService.findById(votePayload.getMemberId());
+
         validateVoting(proposal, member, votePayload.getVotingOption());
+
         Vote vote = new Vote(member, votePayload.getVotingOption());
         proposal.getVotingSession().add(vote);
         proposalRepository.save(proposal);
@@ -79,10 +84,7 @@ public class ProposalService {
     }
 
     private void validateVoting(Proposal proposal, Member member, String votingOption) {
-        if (proposal.getVotingSessionClosingDate() == null) {
-            throw new VotingSessionNotOpenedException(proposal.getId());
-        }
-        if (!proposal.isVotingSessionOpen()) {
+        if (!proposal.getStatus().equals(Proposal.ProposalStatus.OPENED)) {
             throw new VotingSessionClosedException(proposal.getId());
         }
         if (proposal.getVotingSession().contains(new Vote(member, null))) {
@@ -91,5 +93,26 @@ public class ProposalService {
         if (!proposal.getVotingOptions().contains(votingOption)) {
             throw new VotingSessionWrongOptionException(votingOption);
         }
+        if (!Utils.canMemberVote(member.getCpf())) {
+            throw new MemberCannotVoteException(member.getCpf());
+        }
+    }
+
+    public ProposalDTO checkResults(String id) {
+        Proposal proposal = findById(id);
+
+        StringBuilder sb = new StringBuilder();
+
+        List<Vote> votes = proposal.getVotingSession();
+        for (String votingOption : proposal.getVotingOptions()) {
+            sb.append("Option '");
+            sb.append(votingOption);
+            sb.append("' ");
+            sb.append(votes.stream().filter(v -> v.getVotingOption().equals(votingOption)).count());
+            sb.append(" votes. ");
+        }
+        sb.append(" Total of votes: ");
+        sb.append(votes.size());
+        return new ProposalDTO(proposal, sb.toString());
     }
 }
