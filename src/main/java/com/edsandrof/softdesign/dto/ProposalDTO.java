@@ -35,6 +35,7 @@ public class ProposalDTO implements Serializable {
         this.votingSessionClosingDate = proposal.getVotingSessionClosingDate();
         this.status = proposal.getStatus();
         this.results = results;
+        this.votingOptions = proposal.getVotingOptions();
     }
 
     public String getId() {

@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -23,7 +24,6 @@ import java.util.List;
 @RestController
 public class ProposalResource {
     private static final String V1_ENDPOINT = "/api/v1/proposal";
-    private static final String CONTENT_TYPE_JSON = "application/json";
 
     @Autowired
     private ProposalService proposalService;
@@ -44,7 +44,7 @@ public class ProposalResource {
             @ApiResponse(code = 404, message = "Resource id not found"),
             @ApiResponse(code = 200, message = "Return the proposal of specified id")
     })
-    @GetMapping(value = V1_ENDPOINT + "/{id}", produces = CONTENT_TYPE_JSON)
+    @GetMapping(value = V1_ENDPOINT + "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Proposal> findById(@ApiParam(value = "Id of proposal") @PathVariable String id) {
         Proposal proposal = proposalService.findById(id);
         return ResponseEntity.ok().body(proposal);
@@ -52,7 +52,7 @@ public class ProposalResource {
 
     @ApiOperation(value = "List all proposals")
     @ApiResponses(value = @ApiResponse(code = 200, message = "Returns a list of proposals"))
-    @GetMapping(value = V1_ENDPOINT, produces = CONTENT_TYPE_JSON)
+    @GetMapping(value = V1_ENDPOINT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Proposal>> findAll() {
         List<Proposal> proposals = proposalService.findAll();
         return ResponseEntity.ok().body(proposals);

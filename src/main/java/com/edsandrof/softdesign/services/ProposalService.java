@@ -111,7 +111,7 @@ public class ProposalService {
             sb.append(votes.stream().filter(v -> v.getVotingOption().equals(votingOption)).count());
             sb.append(" votes. ");
         }
-        sb.append(" Total of votes: ");
+        sb.append("Total of votes: ");
         sb.append(votes.size());
         return new ProposalDTO(proposal, sb.toString());
     }
