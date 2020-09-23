@@ -30,9 +30,8 @@ Foram feitas validações como:
 - entre outras;
 
 # Testes
-Os testes executados foram testes funcionais.
+Foram implementados testes unitários, testando as camadas web e de serviço, e executados testes funcionais.
 
 # Dificuldades encontradas
-As tarefas bônus 2 e 3 e os testes unitários não foram feitos devido ao tempo para realizar a atividade.
 A descrição da atividade sem maiores detalhes acaba deixando o desenvolvimento mais subjetivo e passível de divergências
 do que era esperado.
