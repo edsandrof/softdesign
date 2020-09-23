@@ -37,7 +37,7 @@ public class ProposalResourceTest {
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     @BeforeAll
-    public static void setTimezone() {
+    public static void setup() {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
