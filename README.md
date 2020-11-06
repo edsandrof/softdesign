@@ -1,7 +1,5 @@
 # SoftDesign - Avaliação Técnica
 
-Projeto no Github: https://github.com/edsandrof/technical_evaluation_softdesign
-
 Aplicação no Heroku: https://softdesign-edsandrof.herokuapp.com/swagger-ui.html
 
 # Descrição do projeto
